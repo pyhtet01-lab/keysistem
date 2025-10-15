@@ -127,57 +127,66 @@ notificationText:Destroy()
 end)()
 end
 
-local Request = syn and syn.request or http and http.request or http_request or request or httprequest
-local getcustomasset = getcustomasset or getsynasset
-
-if not isfolder("Revenant") then
-    makefolder("Revenant")
-    local Circle = Request({
-	Url = "https://github.com/Rain-Design/Libraries/blob/main/Icon/Circle.png?raw=true",
-	Method = "GET"
-	})
-	writefile("Revenant/Circle.png", Circle.Body)
-	library:Notification({
-        Text = "Downloaded Toggle Asset.",
-        Duration = 3
-    })
-end
-
 function library:Window(Info)
-Info.Text = Info.Text or "Revenant"
+    Info.Text = Info.Text or "Revenant"
 
-local Pos = 0.05
+    local insidewindow = {}
 
-for _,v in pairs(game:GetService("CoreGui"):GetChildren()) do
-    if v.Name == "Revenant" then
-        Pos = Pos + 0.12
+    local revenant = Instance.new("ScreenGui")
+    revenant.Name = "Revenant"
+    revenant.Parent = game:GetService("CoreGui")
+
+    local WindowOpened = Instance.new("BoolValue", revenant)
+    WindowOpened.Value = true
+
+    local topbar = Instance.new("Frame")
+    topbar.Name = "Topbar"
+    topbar.BackgroundColor3 = Color3.fromRGB(29, 29, 29)
+    topbar.Size = UDim2.fromOffset(225, 38)
+    topbar.AnchorPoint = Vector2.new(0.5, 0.5)
+
+    -- 👇 Настрой позицию вручную для каждого окна:
+    -- Левое окно: -250, Центр: 0, Правое: +250
+    topbar.Position = UDim2.new(0.5, 0, 0.32, 0) -- ← меняй Offset по X для разных окон
+    topbar.Parent = revenant
+
+    -- Dragging
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        topbar.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
-end
 
-local insidewindow = {}
+    topbar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = topbar.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
 
-local revenant = Instance.new("ScreenGui")
-revenant.Name = "Revenant"
-revenant.Parent = game:GetService("CoreGui")
+    topbar.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
 
-local WindowOpened = Instance.new("BoolValue", revenant)
-WindowOpened.Value = true
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
 
-local topbar = Instance.new("Frame")
-topbar.Name = "Topbar"
-topbar.BackgroundColor3 = Color3.fromRGB(29, 29, 29)
-topbar.Position = UDim2.fromScale(0.1)
-topbar.Size = UDim2.fromOffset(225, 38)
-topbar.Parent = revenant
-
-local dragging
-local dragInput
-local dragStart
-local startPos
-
-local function update(input)
-    local delta = input.Position - dragStart
-    topbar.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    return insidewindow
 end
 
 topbar.InputBegan:Connect(function(input)
