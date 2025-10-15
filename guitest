@@ -148,11 +148,8 @@ Info.Text = Info.Text or "Revenant"
 
 local Pos = 0.05
 
-for _,v in pairs(game:GetService("CoreGui"):GetChildren()) do
-    if v.Name == "Revenant" then
-        Pos = Pos + 0.12
-    end
-end
+topbar.AnchorPoint = Vector2.new(0.5, 0.5)
+topbar.Position = UDim2.new(0.5, 0, 0.35, 0)
 
 local insidewindow = {}
 
