@@ -1,0 +1,84 @@
+
+
+local player = game.Players.LocalPlayer
+local particleTexture = "rbxassetid://248625108" -- Sparkle текстура
+
+local outerRadius = 2.8
+local innerRadius = 2.2
+local count = 12
+local rotationSpeed = 3 -- быстрее вращение
+
+local innerAttachments = {}
+
+local function createEmitter(position, parent)
+    local attachment = Instance.new("Attachment")
+    attachment.Position = position
+    attachment.Parent = parent
+
+    local emitter = Instance.new("ParticleEmitter")
+    emitter.Texture = particleTexture
+    emitter.Rate = 20
+    emitter.Lifetime = NumberRange.new(0.4, 0.6)
+    emitter.Speed = NumberRange.new(1, 2)
+    emitter.Size = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.6),
+        NumberSequenceKeypoint.new(1, 0.1)
+    })
+    emitter.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.1),
+        NumberSequenceKeypoint.new(1, 1)
+    })
+    emitter.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(0, 255, 255))
+    emitter.EmissionDirection = Enum.NormalId.Top
+    emitter.SpreadAngle = Vector2.new(10, 10)
+    emitter.Parent = attachment
+
+    return attachment
+end
+
+local function spawnDoubleCircle(character)
+    local root = character:WaitForChild("HumanoidRootPart", 3)
+    if not root then return end
+
+    -- 🔹 Внешний круг (не вращается)
+    for i = 1, count do
+        local angle = math.rad((360 / count) * i)
+        local x = math.cos(angle) * outerRadius
+        local z = math.sin(angle) * outerRadius
+        local position = Vector3.new(x, -2.5, z)
+        createEmitter(position, root)
+    end
+
+    -- 🔸 Внутренний круг (вращается)
+    for i = 1, count do
+        local angle = math.rad((360 / count) * i)
+        local x = math.cos(angle) * innerRadius
+        local z = math.sin(angle) * innerRadius
+        local position = Vector3.new(x, -2.5, z)
+        local attachment = createEmitter(position, root)
+        table.insert(innerAttachments, attachment)
+    end
+
+    -- 🔄 Вращение внутреннего круга
+    local angleOffset = 0
+    game:GetService("RunService").RenderStepped:Connect(function()
+        angleOffset += rotationSpeed
+        for i, attachment in ipairs(innerAttachments) do
+            local angle = math.rad((360 / count) * i + angleOffset)
+            local x = math.cos(angle) * innerRadius
+            local z = math.sin(angle) * innerRadius
+            attachment.Position = Vector3.new(x, -2.5, z)
+        end
+    end)
+end
+
+-- 🚀 Запуск при появлении персонажа
+player.CharacterAdded:Connect(function(char)
+    task.wait(1)
+    spawnDoubleCircle(char)
+end)
+
+-- 🔁 Если персонаж уже загружен
+if player.Character then
+    spawnDoubleCircle(player.Character)
+end
