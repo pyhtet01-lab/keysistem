@@ -82,3 +82,26 @@ end)
 if player.Character then
     spawnDoubleCircle(player.Character)
 end
+
+КРУТИЛОЧКА+👌👌
+
+local player = game.Players.LocalPlayer
+local rotationSpeed = 60 -- градусов за кадр (очень быстро)
+
+local function spinCharacter(character)
+    local root = character:WaitForChild("HumanoidRootPart", 3)
+    if not root then return end
+
+    game:GetService("RunService").RenderStepped:Connect(function()
+        root.CFrame = root.CFrame * CFrame.Angles(0, math.rad(rotationSpeed), 0)
+    end)
+end
+
+player.CharacterAdded:Connect(function(char)
+    task.wait(1)
+    spinCharacter(char)
+end)
+
+if player.Character then
+    spinCharacter(player.Character)
+end
