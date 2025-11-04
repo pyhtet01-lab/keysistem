@@ -5,6 +5,7 @@ local Mouse = Players.LocalPlayer:GetMouse()
 
 local RevenantUI = {}
 
+-- Init
 function RevenantUI.Init()
     for _, v in pairs(CoreGui:GetChildren()) do
         if v.Name == "Revenant" then
@@ -20,6 +21,7 @@ function RevenantUI.Init()
     return gui
 end
 
+-- Section
 function RevenantUI.CreateSection(gui, width, yOffset)
     local screenSize = workspace.CurrentCamera.ViewportSize
     local baseX = (screenSize.X - width) / 2
@@ -35,7 +37,8 @@ function RevenantUI.CreateSection(gui, width, yOffset)
 
     return section
 end
---2
+
+-- Dropdown
 function RevenantUI.CreateDropdown(parent)
     local dropdown = Instance.new("TextButton")
     dropdown.Size = UDim2.fromOffset(200, 20)
@@ -59,6 +62,7 @@ function RevenantUI.CreateDropdown(parent)
     end
 end
 
+-- Toggle
 function RevenantUI.CreateToggle(parent)
     local toggleFrame = Instance.new("Frame")
     toggleFrame.Size = UDim2.fromOffset(38, 17)
@@ -87,7 +91,8 @@ function RevenantUI.CreateToggle(parent)
         return toggled
     end
 end
---3
+
+-- Slider
 function RevenantUI.CreateSlider(parent)
     local bar = Instance.new("Frame")
     bar.Size = UDim2.fromOffset(200, 6)
@@ -135,6 +140,7 @@ function RevenantUI.CreateSlider(parent)
     end
 end
 
+-- Keybind
 function RevenantUI.CreateKeybind(parent)
     local bindButton = Instance.new("TextButton")
     bindButton.Size = UDim2.fromOffset(90, 20)
@@ -167,41 +173,8 @@ function RevenantUI.CreateKeybind(parent)
         return currentBind
     end
 end
---4
-local RevenantUI = require(script.Parent.Core)
-require(script.Parent.Elements)
-require(script.Parent.Inputs)
 
-local gui = RevenantUI.Init()
-local section = RevenantUI.CreateSection(gui, 225, 0.1)
-
-local getDropdown = RevenantUI.CreateDropdown(section)
-local getToggle = RevenantUI.CreateToggle(section)
-local getSlider = RevenantUI.CreateSlider(section)
-local getBind = RevenantUI.CreateKeybind(section)
-
-RevenantUI.CreateButton = function(parent, callback)
-    local actionButton = Instance.new("TextButton")
-    actionButton.Size = UDim2.fromOffset(90, 20)
-    actionButton.Position = UDim2.fromOffset(120, 90)
-    actionButton.Text = "Click"
-    actionButton.Font = Enum.Font.GothamBold
-    actionButton.TextSize = 13
-    actionButton.TextColor3 = Color3.fromRGB(214, 214, 214)
-    actionButton.BackgroundColor3 = Color3.fromRGB(25, 25, 112)
-    actionButton.Parent = parent
-    Instance.new("UICorner", actionButton).CornerRadius = UDim.new(0, 4)
-
-    actionButton.MouseButton1Click:Connect(callback)
-end
-
-RevenantUI.CreateButton(section, function()
-    print("Выбор:", getDropdown())
-    print("Рычаг:", getToggle())
-    print("Слайдер:", getSlider())
-    print("Бинд:", getBind() and getBind().Name or "None")
-end)
---5
+-- Button
 function RevenantUI.CreateButton(parent, callback)
     local actionButton = Instance.new("TextButton")
     actionButton.Size = UDim2.fromOffset(90, 20)
@@ -216,23 +189,23 @@ function RevenantUI.CreateButton(parent, callback)
 
     actionButton.MouseButton1Click:Connect(callback)
 end
---6
-local RevenantUI = require(script.Parent.Core)
-require(script.Parent.Elements)
-require(script.Parent.Inputs)
-require(script.Parent.Button)
 
-local gui = RevenantUI.Init()
-local section = RevenantUI.CreateSection(gui, 225, 0.1)
+-- Main
+function RevenantUI.Run()
+    local gui = RevenantUI.Init()
+    local section = RevenantUI.CreateSection(gui, 225, 0.1)
 
-local getDropdown = RevenantUI.CreateDropdown(section)
-local getToggle = RevenantUI.CreateToggle(section)
-local getSlider = RevenantUI.CreateSlider(section)
-local getBind = RevenantUI.CreateKeybind(section)
+    local getDropdown = RevenantUI.CreateDropdown(section)
+    local getToggle = RevenantUI.CreateToggle(section)
+    local getSlider = RevenantUI.CreateSlider(section)
+    local getBind = RevenantUI.CreateKeybind(section)
 
-RevenantUI.CreateButton(section, function()
-    print("Выбор:", getDropdown())
-    print("Рычаг:", getToggle())
-    print("Слайдер:", getSlider())
-    print("Бинд:", getBind() and getBind().Name or "None")
-end)
+    RevenantUI.CreateButton(section, function()
+        print("Выбор:", getDropdown())
+        print("Рычаг:", getToggle())
+        print("Слайдер:", getSlider())
+        print("Бинд:", getBind() and getBind().Name or "None")
+    end)
+end
+
+return RevenantUI
