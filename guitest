@@ -168,7 +168,6 @@ function RevenantUI.CreateKeybind(parent)
             listening = false
         end
     end)
-
     return function()
         return currentBind
     end
